@@ -87,3 +87,46 @@ This is a small family-use app, but a few things worth knowing:
   before being saved, so users can't upload arbitrary scripts.
 - Put the whole app behind HTTPS if it's reachable from outside your home
   network.
+
+## 6. Kid-mode navigation, quick face switching, and kiosk/full screen
+
+- **Back button**: once a game starts, a small ⬅ button appears top-left
+  of the stage. It returns to the "who's flying?" screen at any time —
+  mid-flight or from the end screen — without needing to lose all hearts
+  first.
+- **Quick face switcher**: the same row of player photos also appears as
+  small thumbnails at the top of the game itself. Tapping one swaps the
+  flying face immediately, even mid-flight — no menus, ideal for a
+  toddler who just wants to tap around. (The end screen also has a
+  "Choose a different flyer" button that goes back to the full picker.)
+- **Full screen**: a ⛶ button (top-right) toggles the browser's full
+  screen mode. The game also tries to enter full screen automatically on
+  the very first tap after loading — browsers require an actual user
+  gesture to allow full screen, so a page can't do this the instant it
+  loads, but grabbing the first tap gets as close as the web platform
+  allows.
+  - This works well on Android and desktop browsers.
+  - **iOS Safari does not support the full screen API** for regular
+    pages (only for `<video>`), so the ⛶ button hides itself there
+    automatically rather than showing something that doesn't work.
+    For a true "can't get to the address bar" kiosk feel on an iPad,
+    have the grown-up open the site in Safari once, tap **Share → Add
+    to Home Screen**, and launch the game from that home screen icon
+    from then on — the included `manifest.json` and Apple meta tags
+    make it open completely chrome-less (no address bar, no browser
+    UI) when launched that way, which is the most reliable way to keep
+    a toddler from wandering off to another site or app.
+
+## Notes on this version
+
+- Live site: `ezrabird.300interactive.com`, repo:
+  `github.com/bailey-300interactive/ezra-bird`.
+- Database name: **`ezrabird`** — matches `includes/config.sample`
+  (copy it to `includes/config.php` and fill in real DB credentials;
+  `config.php` is gitignored on purpose, so it won't get overwritten by
+  a `git pull`).
+- `sql/` and `uploads/` are gitignored too, since they hold your live
+  data/photos — this repo update doesn't touch either. If you ever need
+  a fresh schema, see the `CREATE TABLE faces (...)` shape in
+  `includes/config.sample`'s neighboring app code, or ask for a new
+  `schema.sql`.

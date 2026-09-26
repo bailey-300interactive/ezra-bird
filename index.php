@@ -3,8 +3,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="apple-touch-icon" href="assets/img/app-icon-1024.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#8FD9FF">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ezra Bird">
 <title>Flappy Faces</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
@@ -13,8 +19,17 @@
     <h1 class="game-title">Ezra Bird 🐣</h1>
     <p class="game-subtitle">Tap or press SPACE to fly through the clouds!</p>
 
-    <div class="stage">
+    <div class="stage" id="stage">
       <canvas id="gameCanvas" width="480" height="640"></canvas>
+
+      <!-- On-screen toolbar during play: back to player select, quick face
+           switcher (no need to leave the game), and a full-screen toggle.
+           Hidden while the picker is open since it would sit under it. -->
+      <div id="gameToolbar" class="game-toolbar hidden">
+        <button id="backBtn" class="toolbar-btn" title="Back to player select" aria-label="Back to player select">⬅</button>
+        <div id="miniFaceRow" class="mini-face-row"></div>
+        <button id="fullscreenBtn" class="toolbar-btn" title="Full screen" aria-label="Full screen">⛶</button>
+      </div>
 
       <!-- Face picker shown before the game starts -->
       <div id="pickerOverlay" class="overlay">
@@ -28,6 +43,7 @@
         <h2 id="endMessage">Great flying!</h2>
         <p id="endScore"></p>
         <button id="playAgainBtn" class="btn btn-primary">Play again</button>
+        <button id="changePlayerBtn" class="btn btn-ghost">Choose a different flyer</button>
       </div>
     </div>
 

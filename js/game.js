@@ -15,9 +15,14 @@
   const endMessage     = document.getElementById('endMessage');
   const endScoreLabel  = document.getElementById('endScore');
   const playAgainBtn   = document.getElementById('playAgainBtn');
+  const changePlayerBtn = document.getElementById('changePlayerBtn');
   const scoreLabel     = document.getElementById('scoreLabel');
   const heartsLabel    = document.getElementById('heartsLabel');
   const soundBtn       = document.getElementById('soundBtn');
+  const gameToolbar    = document.getElementById('gameToolbar');
+  const backBtn        = document.getElementById('backBtn');
+  const miniFaceRow    = document.getElementById('miniFaceRow');
+  const fullscreenBtn  = document.getElementById('fullscreenBtn');
 
   /* ---------------------- Friendly sound engine ---------------------- */
   const Sound = (() => {
@@ -195,6 +200,7 @@
       const btn = document.createElement('button');
       btn.className = 'picker-face';
       btn.type = 'button';
+      btn.dataset.faceId = face.id;
 
       const img = document.createElement('img');
       img.src = face.image_path || fallbackFaceDataUri();
@@ -205,20 +211,42 @@
       span.textContent = face.name;
       btn.appendChild(span);
 
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.picker-face').forEach(el => el.classList.remove('selected'));
-        btn.classList.add('selected');
-        selectFace(face);
-      });
+      btn.addEventListener('click', () => selectFace(face));
 
       pickerGrid.appendChild(btn);
     });
 
+    buildMiniFaceRow();
+
     // Auto-select the first face so kids can hit Start immediately.
-    if (faces.length) {
-      pickerGrid.firstChild.classList.add('selected');
-      selectFace(faces[0]);
-    }
+    if (faces.length) selectFace(faces[0]);
+  }
+
+  // The same face list, shown as small always-visible buttons during play
+  // so a toddler can swap characters on demand without leaving the game.
+  function buildMiniFaceRow() {
+    miniFaceRow.innerHTML = '';
+    faces.forEach((face) => {
+      const btn = document.createElement('button');
+      btn.className = 'mini-face-btn';
+      btn.type = 'button';
+      btn.dataset.faceId = face.id;
+
+      const img = document.createElement('img');
+      img.src = face.image_path || fallbackFaceDataUri();
+      img.alt = face.name;
+      btn.appendChild(img);
+
+      btn.addEventListener('click', () => selectFace(face));
+
+      miniFaceRow.appendChild(btn);
+    });
+  }
+
+  function markSelectedFaceButtons(faceId) {
+    document.querySelectorAll('.picker-face, .mini-face-btn').forEach((el) => {
+      el.classList.toggle('selected', String(el.dataset.faceId) === String(faceId));
+    });
   }
 
   function fallbackFaceDataUri() {
@@ -232,14 +260,93 @@
       </svg>`);
   }
 
+  // Swaps the flying face. Safe to call any time — including mid-flight —
+  // so the mini toolbar can switch characters without pausing the game.
   function selectFace(face) {
     selectedFace = face;
+    markSelectedFaceButtons(face.id);
     const img = new Image();
     img.crossOrigin = 'anonymous';
     img.onload = () => { birdImg = img; startBtn.disabled = false; };
     img.onerror = () => { birdImg = null; startBtn.disabled = false; };
     img.src = face.image_path || fallbackFaceDataUri();
   }
+
+  /* ---------------------- Full screen (kid-mode kiosk) ---------------------- */
+  function isFullscreen() {
+    return !!(document.fullscreenElement || document.webkitFullscreenElement);
+  }
+
+  function enterFullscreen() {
+    const target = document.documentElement; // whole page, so the address bar/UI stays hidden
+    const req = target.requestFullscreen || target.webkitRequestFullscreen;
+    if (req) {
+      try { req.call(target); } catch (e) { /* ignore — needs a user gesture, or unsupported */ }
+    }
+  }
+
+  function exitFullscreen() {
+    const exit = document.exitFullscreen || document.webkitExitFullscreen;
+    if (exit) {
+      try { exit.call(document); } catch (e) { /* ignore */ }
+    }
+  }
+
+  function updateFullscreenBtn() {
+    const on = isFullscreen();
+    fullscreenBtn.textContent = on ? '⤢' : '⛶';
+    fullscreenBtn.classList.toggle('is-on', on);
+    fullscreenBtn.title = on ? 'Exit full screen' : 'Full screen';
+  }
+
+  const fullscreenSupported = !!(document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen);
+  if (!fullscreenSupported) {
+    // iOS Safari in particular doesn't support the Fullscreen API outside
+    // <video>. Hide the button rather than show one that silently does
+    // nothing — "Add to Home Screen" (see manifest.json) is the real fix
+    // for a true kiosk look on those devices.
+    fullscreenBtn.style.display = 'none';
+  }
+
+  fullscreenBtn.addEventListener('click', () => {
+    if (isFullscreen()) exitFullscreen(); else enterFullscreen();
+  });
+  document.addEventListener('fullscreenchange', updateFullscreenBtn);
+  document.addEventListener('webkitfullscreenchange', updateFullscreenBtn);
+
+  // Browsers only allow requestFullscreen() inside a real user gesture, so
+  // we can't truly auto-fullscreen on page load. Instead we grab the very
+  // first tap/click anywhere on the page — which for kid-mode is normally
+  // the very first thing that happens — and use that gesture to go full
+  // screen automatically, so a grown-up doesn't have to find the button.
+  function armAutoFullscreen() {
+    if (!fullscreenSupported) return;
+    const tryOnce = () => {
+      document.removeEventListener('pointerdown', tryOnce, true);
+      if (!isFullscreen()) enterFullscreen();
+    };
+    document.addEventListener('pointerdown', tryOnce, true);
+  }
+  armAutoFullscreen();
+
+  /* ---------------------- Toolbar / navigation ---------------------- */
+  function showToolbar() { gameToolbar.classList.remove('hidden'); }
+  function hideToolbar() { gameToolbar.classList.add('hidden'); }
+
+  // Returns to the "who's flying?" screen from anywhere (mid-game or the
+  // end screen) without needing to lose all hearts first.
+  function goToPicker() {
+    Sound.stopMusic();
+    state = 'picking';
+    hideToolbar();
+    endOverlay.classList.add('hidden');
+    pickerOverlay.classList.remove('hidden');
+    resetGameVars();
+    render(performance.now());
+  }
+
+  backBtn.addEventListener('click', goToPicker);
+  changePlayerBtn.addEventListener('click', goToPicker);
 
   /* ---------------------- Input ---------------------- */
   function flap() {
@@ -257,7 +364,9 @@
 
   startBtn.addEventListener('click', () => {
     Sound.ensureCtx();
+    enterFullscreen();
     pickerOverlay.classList.add('hidden');
+    showToolbar();
     resetGameVars();
     state = 'ready';
     loop(performance.now());
@@ -265,6 +374,7 @@
 
   playAgainBtn.addEventListener('click', () => {
     endOverlay.classList.add('hidden');
+    showToolbar();
     resetGameVars();
     state = 'ready';
     loop(performance.now());
@@ -557,7 +667,7 @@
 
   /* ---------------------- Main loop ---------------------- */
   function loop(ts) {
-    if (state === 'ended') return;
+    if (state === 'ended' || state === 'picking') return;
     if (!lastTs) lastTs = ts;
     const dt = Math.min(ts - lastTs, 34);
     lastTs = ts;

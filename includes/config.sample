@@ -1,0 +1,23 @@
+<?php
+// ---------------------------------------------------------
+// Flappy Faces - configuration
+// Edit these values for your LAMP server, then you're set.
+// ---------------------------------------------------------
+
+// --- Database ---
+define('DB_HOST', 'localhost');
+define('DB_NAME', '');
+define('DB_USER', '');
+define('DB_PASS', '');
+
+// --- Admin login ---
+// Change this before putting the site online!
+define('ADMIN_PASSWORD', 'test');
+
+// --- Uploads ---
+define('UPLOAD_DIR', __DIR__ . '/../uploads/');   // filesystem path
+define('UPLOAD_URL', 'uploads/');                  // web-relative path used in <img src="">
+define('MAX_UPLOAD_BYTES', 3 * 1024 * 1024);        // 3MB per photo
+define('ALLOWED_EXTENSIONS', ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+
+session_start();

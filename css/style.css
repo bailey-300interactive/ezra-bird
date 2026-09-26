@@ -65,6 +65,68 @@ h1,h2{
   touch-action:manipulation;
 }
 
+/* On-screen toolbar shown during play: back button, quick face switcher,
+   full-screen toggle. Sits above the canvas, below the overlays. */
+.game-toolbar{
+  position:absolute;
+  top:0; left:0; right:0;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 10px 0;
+  z-index:2;
+}
+
+.game-toolbar.hidden{ display:none; }
+
+.toolbar-btn{
+  flex:0 0 auto;
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  border:none;
+  background:rgba(255,255,255,0.85);
+  color:var(--navy);
+  font-size:1.2rem;
+  line-height:1;
+  cursor:pointer;
+  box-shadow:0 3px 0 rgba(43,58,85,0.18);
+}
+.toolbar-btn:active{ transform:translateY(2px); box-shadow:0 1px 0 rgba(43,58,85,0.18); }
+.toolbar-btn.is-on{ background:var(--sun); }
+
+.mini-face-row{
+  flex:1 1 auto;
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  padding:2px 4px;
+  scrollbar-width:none;
+}
+.mini-face-row::-webkit-scrollbar{ display:none; }
+
+.mini-face-btn{
+  flex:0 0 auto;
+  border:none;
+  background:none;
+  padding:0;
+  cursor:pointer;
+}
+.mini-face-btn img{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  object-fit:cover;
+  border:3px solid rgba(255,255,255,0.85);
+  display:block;
+  box-shadow:0 2px 5px rgba(0,0,0,0.2);
+  transition:transform .12s ease, border-color .12s ease;
+}
+.mini-face-btn.selected img{
+  border-color:var(--sun);
+  transform:scale(1.12);
+}
+
 .overlay{
   position:absolute;
   inset:0;
@@ -77,6 +139,7 @@ h1,h2{
   color:var(--white);
   text-align:center;
   padding:20px;
+  z-index:3;
 }
 
 .overlay.hidden{ display:none; }
@@ -85,6 +148,11 @@ h1,h2{
   font-size:1.6rem;
   margin:0;
   text-shadow:1px 1px 0 rgba(0,0,0,0.25);
+}
+
+.overlay .btn-ghost{
+  color:var(--white);
+  border-color:rgba(255,255,255,0.8);
 }
 
 .picker-grid{
