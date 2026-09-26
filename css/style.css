@@ -1,0 +1,279 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@600;700;800&display=swap');
+
+:root{
+  --sky-top:#8FD9FF;
+  --sky-bottom:#CFF3FF;
+  --sun:#FFD166;
+  --grass:#7BC96F;
+  --grass-dark:#5FAE55;
+  --coral:#FF6F59;
+  --navy:#2B3A55;
+  --white:#FFFFFF;
+  --card-shadow: 0 10px 0 rgba(43,58,85,0.12);
+}
+
+*{ box-sizing:border-box; }
+
+body{
+  margin:0;
+  font-family:'Nunito', sans-serif;
+  color:var(--navy);
+  background:linear-gradient(180deg,var(--sky-top),var(--sky-bottom));
+  min-height:100vh;
+}
+
+h1,h2{
+  font-family:'Baloo 2', sans-serif;
+}
+
+/* ---------------- Game page ---------------- */
+.game-wrap{
+  max-width:520px;
+  margin:0 auto;
+  padding:18px 16px 40px;
+  text-align:center;
+}
+
+.game-title{
+  font-size:2.1rem;
+  color:var(--navy);
+  margin:6px 0 2px;
+  text-shadow: 2px 2px 0 rgba(255,255,255,0.6);
+}
+
+.game-subtitle{
+  margin:0 0 16px;
+  font-weight:700;
+  color:#3F5372;
+}
+
+.stage{
+  position:relative;
+  width:100%;
+  aspect-ratio: 3 / 4;
+  border-radius:28px;
+  overflow:hidden;
+  box-shadow: var(--card-shadow), 0 4px 18px rgba(0,0,0,0.15);
+  border:6px solid var(--white);
+  background:#bdeaff;
+}
+
+#gameCanvas{
+  display:block;
+  width:100%;
+  height:100%;
+  touch-action:manipulation;
+}
+
+.overlay{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  background:rgba(20,40,70,0.45);
+  color:var(--white);
+  text-align:center;
+  padding:20px;
+}
+
+.overlay.hidden{ display:none; }
+
+.overlay h2{
+  font-size:1.6rem;
+  margin:0;
+  text-shadow:1px 1px 0 rgba(0,0,0,0.25);
+}
+
+.picker-grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  justify-content:center;
+  max-height:210px;
+  overflow-y:auto;
+  padding:6px;
+}
+
+.picker-face{
+  width:76px;
+  cursor:pointer;
+  border:none;
+  background:none;
+  color:var(--white);
+  font-family:'Nunito',sans-serif;
+  font-weight:800;
+}
+
+.picker-face img{
+  width:70px;
+  height:70px;
+  border-radius:50%;
+  border:4px solid var(--white);
+  object-fit:cover;
+  display:block;
+  margin:0 auto 4px;
+  transition:transform .15s ease, border-color .15s ease;
+}
+
+.picker-face.selected img{
+  border-color:var(--sun);
+  transform:scale(1.12);
+}
+
+.picker-face span{
+  font-size:0.8rem;
+}
+
+.btn{
+  font-family:'Baloo 2', sans-serif;
+  font-weight:700;
+  font-size:1.05rem;
+  border:none;
+  border-radius:999px;
+  padding:12px 26px;
+  cursor:pointer;
+  color:var(--white);
+  background:var(--coral);
+  box-shadow:0 5px 0 #C24C3B;
+  transition:transform .08s ease, box-shadow .08s ease;
+}
+.btn:active{ transform:translateY(3px); box-shadow:0 2px 0 #C24C3B; }
+.btn-primary{ background:var(--coral); box-shadow:0 5px 0 #C24C3B; }
+.btn-block{ width:100%; }
+.btn-ghost{
+  background:rgba(255,255,255,0.15);
+  box-shadow:none;
+  border:2px solid rgba(255,255,255,0.6);
+  text-decoration:none;
+  display:inline-block;
+  font-size:0.95rem;
+  padding:9px 18px;
+}
+.btn-small{
+  font-size:0.8rem;
+  padding:7px 12px;
+  box-shadow:0 3px 0 #C24C3B;
+  color:var(--white);
+}
+.btn-danger{ background:#E15252; box-shadow:0 3px 0 #A83B3B; }
+
+.hud{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:14px;
+  font-family:'Baloo 2', sans-serif;
+  font-weight:700;
+  color:var(--navy);
+}
+
+.hearts span{ font-size:1.3rem; margin-right:2px; }
+
+.sound-toggle{
+  background:var(--white);
+  border:3px solid #DCEEFB;
+  border-radius:50%;
+  width:44px;
+  height:44px;
+  font-size:1.2rem;
+  cursor:pointer;
+}
+
+.score-pill{
+  background:var(--white);
+  border-radius:999px;
+  padding:6px 16px;
+  box-shadow:0 3px 0 rgba(43,58,85,0.12);
+}
+
+footer.hint{
+  margin-top:14px;
+  font-size:0.85rem;
+  color:#547;
+  opacity:0.8;
+}
+
+/* ---------------- Admin ---------------- */
+.admin-body{
+  background:linear-gradient(180deg,var(--sky-top),var(--sky-bottom));
+}
+
+.admin-login-card{
+  max-width:360px;
+  margin:70px auto;
+  background:var(--white);
+  border-radius:22px;
+  padding:30px 28px;
+  text-align:center;
+  box-shadow:var(--card-shadow);
+}
+.admin-login-emoji{ font-size:2.4rem; }
+.admin-login-card h1{ font-size:1.4rem; margin:6px 0; }
+.admin-login-card label{ display:block; text-align:left; font-weight:700; margin:14px 0 6px; }
+.admin-login-card input[type=password]{
+  width:100%; padding:10px 12px; border-radius:12px; border:2px solid #DCEEFB; font-size:1rem;
+}
+.back-link{ display:inline-block; margin-top:16px; color:#3F5372; font-weight:700; text-decoration:none; }
+
+.admin-header{
+  max-width:900px;
+  margin:0 auto;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:22px 20px 6px;
+  flex-wrap:wrap;
+  gap:10px;
+}
+.admin-header h1{ font-size:1.4rem; margin:0; }
+.admin-header nav{ display:flex; gap:10px; }
+.admin-header .btn-ghost{ color:var(--navy); border-color:var(--navy); }
+
+.admin-main{
+  max-width:900px;
+  margin:0 auto;
+  padding:10px 20px 50px;
+}
+
+.admin-card{
+  background:var(--white);
+  border-radius:20px;
+  padding:22px 24px;
+  margin-bottom:22px;
+  box-shadow:var(--card-shadow);
+}
+.admin-card h2{ margin-top:0; font-size:1.2rem; }
+
+.form-row{ margin-bottom:14px; text-align:left; }
+.form-row label{ display:block; font-weight:700; margin-bottom:6px; }
+.form-row input[type=text]{
+  width:100%; padding:10px 12px; border-radius:12px; border:2px solid #DCEEFB; font-size:1rem;
+}
+.form-row input[type=file]{ font-size:0.95rem; }
+
+.face-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+  gap:16px;
+}
+.face-tile{
+  background:#F5FBFF;
+  border-radius:16px;
+  padding:12px;
+  text-align:center;
+}
+.face-tile.is-inactive{ opacity:0.45; }
+.face-tile img{
+  width:78px; height:78px; border-radius:50%; object-fit:cover; border:3px solid var(--white); box-shadow:0 2px 6px rgba(0,0,0,0.12);
+}
+.face-tile-name{ font-weight:800; margin:8px 0 8px; }
+.face-tile-actions{ display:flex; flex-direction:column; gap:6px; }
+.face-tile-actions form{ margin:0; }
+.face-tile-actions .btn{ width:100%; }
+
+.muted{ color:#5A6E8C; }
+.success-msg{ background:#DDF6E2; color:#1F7A3B; padding:10px 16px; border-radius:12px; font-weight:700; max-width:900px; margin:0 auto 14px; }
+.error-msg{ background:#FDE1E1; color:#B3271F; padding:10px 16px; border-radius:12px; font-weight:700; max-width:900px; margin:0 auto 14px; }
